@@ -1,0 +1,22 @@
+<app-url-navigation xmlns="http://www.w3.org/1999/html"></app-url-navigation>
+<div class="container">
+    <mat-form-field appearance="fill" class="item margins-left-right">
+        <mat-label>Enter URL To Shorten</mat-label>
+        <input matInput placeholder="e.g. https://google.com"
+               [formControl]="url" required>
+        <mat-error *ngIf="url.invalid">{{getErrorMessage()}}</mat-error>
+    </mat-form-field>
+    <mat-icon *ngIf="shortUrl.value.length != 0" style="font-size: 50px"
+              [inline]="true" class="item">compare_arrows
+    </mat-icon>
+    <mat-form-field *ngIf="shortUrl.value.length != 0" appearance="fill"
+                    class="item margins-left-right">
+        <mat-label>Shortened</mat-label>
+        <input readonly matInput [formControl]="shortUrl" required>
+    </mat-form-field>
+</div>
+<section>
+    <button class="margins-left-right" (click)="shorten()"
+            [disabled]="url.invalid" mat-raised-button color="primary">Shorten
+    </button>
+</section>

@@ -1,0 +1,21 @@
+.container {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  align-items: center;
+  align-content: center;
+}
+
+.item {
+  flex: 1 1 min-content;
+}
+
+.margins-left-right {
+  margin-left: 25px;
+  margin-right: 25px;
+}
+
+mat-form-field.mat-form-field {
+  width: 300px;
+}
