@@ -1,0 +1,77 @@
+plugins {
+	id 'org.springframework.boot' version '2.5.1'
+	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+	id 'java'
+}
+
+group = "$group"
+version = "$version"
+sourceCompatibility = "$sourceCompatibility"
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+	runtimeAgent
+}
+
+repositories {
+	mavenCentral()
+}
+
+ext {
+	set('springCloudVersion', "2020.0.3")
+}
+
+dependencies {
+//	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+	implementation 'org.springframework.boot:spring-boot-starter-webflux'
+	implementation 'org.springframework.cloud:spring-cloud-starter-circuitbreaker-reactor-resilience4j'
+	implementation 'org.springframework.boot:spring-boot-starter-aop'
+	implementation "org.aspectj:aspectjrt:${aspectjVersion}"
+	implementation "org.aspectj:aspectjweaver:${aspectjVersion}"
+	implementation "org.apache.commons:commons-lang3:${apacheCommonsVersion}"
+	implementation "org.springframework:spring-aspects:5.3.8"
+
+	compileOnly "org.projectlombok:lombok:${lombokVersion}"
+	annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'io.projectreactor:reactor-test'
+	testImplementation "org.assertj:assertj-core:${assertjVersion}"
+	testCompileOnly "org.projectlombok:lombok:${lombokVersion}"
+	testAnnotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+
+	// BEGIN: Required for LTW to work when the application is run via the "test" or bootRun" Gradle
+	//        tasks.
+	runtimeAgent "org.springframework:spring-instrument"
+	runtimeAgent "org.aspectj:aspectjweaver:${aspectjVersion}"
+	// END
+
+}
+
+dependencyManagement {
+	imports {
+		mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+	}
+}
+
+test {
+	useJUnitPlatform()
+}
+
+test.doFirst {
+	// Ensure that all of the agents we need to load at run-time happen for tests
+	configurations.runtimeAgent.each {
+		File jarFile ->
+			jvmArgs "-javaagent:${jarFile.absolutePath}"
+	}
+}
+
+bootRun.doFirst {
+	// Ensure that all of the agents we need to load at run-time happen when running the app through
+	// Gradle
+	configurations.runtimeAgent.each {
+		File jarFile ->
+			jvmArgs "-javaagent:${jarFile.absolutePath}"
+	}
+}
